@@ -21,6 +21,7 @@ const APP_TITLES: Record<string, string> = {
   'weather': 'Weather',
   'text-editor': 'Text Editor',
   'task-manager': 'Task Manager',
+  'recycle-bin': 'Recycle Bin',
 };
 
 const APP_DEFAULT_SIZES: Record<string, Size> = {
@@ -38,6 +39,7 @@ const APP_DEFAULT_SIZES: Record<string, Size> = {
   'weather': { width: 380, height: 500 },
   'text-editor': { width: 700, height: 500 },
   'task-manager': { width: 600, height: 400 },
+  'recycle-bin': { width: 500, height: 400 },
 };
 
 function getNextZIndex(windows: WindowState[]): number {

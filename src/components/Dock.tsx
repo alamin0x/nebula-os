@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useEffect, memo } from 'react';
 import { useWindowStore } from '../stores/windowStore';
 import { useInstalledAppsStore } from '../stores/installedAppsStore';
+import { useDockStore } from '../stores/dockStore';
 import { magneticEffect } from '../utils/magneticEffect';
 import type { AppId, Position } from '../types';
 
@@ -10,38 +11,72 @@ interface DockApp {
   icon: string;
 }
 
-const BUILT_IN_DOCK_APPS: DockApp[] = [
-  { id: 'browser', title: 'Browser', icon: '🌐' },
-  { id: 'notes', title: 'Notes', icon: '📝' },
-  { id: 'ai-assistant', title: 'AI Assistant', icon: '🤖' },
-  { id: 'music-player', title: 'Music Player', icon: '🎵' },
-  { id: 'system-monitor', title: 'System Monitor', icon: '📊' },
-  { id: 'terminal', title: 'Terminal', icon: '💻' },
-  { id: 'file-explorer', title: 'File Explorer', icon: '📂' },
-  { id: 'app-store', title: 'App Store', icon: '🏪' },
-  { id: 'settings', title: 'Settings', icon: '⚙️' },
-];
+/** Map of all known built-in app metadata for resolving pinned IDs */
+const ALL_BUILT_IN_APPS: Record<string, { title: string; icon: string }> = {
+  'browser': { title: 'Browser', icon: '🌐' },
+  'notes': { title: 'Notes', icon: '📝' },
+  'ai-assistant': { title: 'AI Assistant', icon: '🤖' },
+  'music-player': { title: 'Music Player', icon: '🎵' },
+  'system-monitor': { title: 'System Monitor', icon: '📊' },
+  'terminal': { title: 'Terminal', icon: '💻' },
+  'file-explorer': { title: 'File Explorer', icon: '📂' },
+  'app-store': { title: 'App Store', icon: '🏪' },
+  'settings': { title: 'Settings', icon: '⚙️' },
+  'secret-room': { title: 'Secret Room', icon: '🔮' },
+  'calendar': { title: 'Calendar', icon: '📅' },
+  'weather': { title: 'Weather', icon: '🌤️' },
+  'text-editor': { title: 'Text Editor', icon: '✏️' },
+  'task-manager': { title: 'Task Manager', icon: '📋' },
+  'recycle-bin': { title: 'Recycle Bin', icon: '🗑️' },
+};
 
 /**
  * Dock component — application launcher with magnetic hover effect.
  * Vertical panel on the left for ≥1024px viewports; bottom bar for <1024px.
  * Icons shift toward the cursor (max 6px) when within 80px using magneticEffect utility.
  * Supports both mouse and touch interactions.
+ * Reads pinned apps from dockStore for customization.
  */
 export const Dock = memo(function Dock() {
   const openWindow = useWindowStore((state) => state.openWindow);
   const windows = useWindowStore((state) => state.windows);
   const installedApps = useInstalledAppsStore((state) => state.apps);
+  const pinnedApps = useDockStore((state) => state.pinnedApps);
+  const removeFromDock = useDockStore((state) => state.removeFromDock);
+  const addToDock = useDockStore((state) => state.addToDock);
   const [cursorPos, setCursorPos] = useState<Position>({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
+  const [showAddPopover, setShowAddPopover] = useState(false);
   const dockRef = useRef<HTMLDivElement>(null);
   const iconRefs = useRef<Map<AppId, HTMLButtonElement>>(new Map());
+  const popoverRef = useRef<HTMLDivElement>(null);
 
-  // Combine built-in dock apps with installed store apps
-  const DOCK_APPS: DockApp[] = [
-    ...BUILT_IN_DOCK_APPS,
-    ...installedApps.map((a) => ({ id: a.id as AppId, title: a.name, icon: a.icon })),
-  ];
+  // Resolve pinned app IDs to DockApp objects
+  const pinnedDockApps: DockApp[] = pinnedApps
+    .map((appId) => {
+      const builtIn = ALL_BUILT_IN_APPS[appId];
+      if (builtIn) {
+        return { id: appId as AppId, title: builtIn.title, icon: builtIn.icon };
+      }
+      const storeApp = installedApps.find((a) => a.id === appId);
+      if (storeApp) {
+        return { id: storeApp.id as AppId, title: storeApp.name, icon: storeApp.icon };
+      }
+      return null;
+    })
+    .filter((app): app is DockApp => app !== null);
+
+  // Also include installed store apps that aren't already pinned
+  const installedNotPinned = installedApps
+    .filter((a) => !pinnedApps.includes(a.id))
+    .map((a) => ({ id: a.id as AppId, title: a.name, icon: a.icon }));
+
+  const DOCK_APPS: DockApp[] = [...pinnedDockApps, ...installedNotPinned];
+
+  // Apps available to add (not currently in dock)
+  const availableToAdd: DockApp[] = Object.entries(ALL_BUILT_IN_APPS)
+    .filter(([id]) => !pinnedApps.includes(id))
+    .map(([id, meta]) => ({ id: id as AppId, title: meta.title, icon: meta.icon }));
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     setCursorPos({ x: e.clientX, y: e.clientY });
@@ -76,6 +111,18 @@ export const Dock = memo(function Dock() {
     };
   }, [isHovering, handleMouseMove]);
 
+  // Close popover when clicking outside
+  useEffect(() => {
+    if (!showAddPopover) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
+        setShowAddPopover(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showAddPopover]);
+
   const handleDockMouseEnter = useCallback(() => {
     setIsHovering(true);
   }, []);
@@ -94,11 +141,26 @@ export const Dock = memo(function Dock() {
 
   const handleAppTouchEnd = useCallback(
     (appId: AppId, e: React.TouchEvent) => {
-      // Prevent the click event from also firing (avoids double-open)
       e.preventDefault();
       openWindow(appId);
     },
     [openWindow]
+  );
+
+  const handleRemoveFromDock = useCallback(
+    (appId: string, e: React.MouseEvent) => {
+      e.stopPropagation();
+      removeFromDock(appId);
+    },
+    [removeFromDock]
+  );
+
+  const handleAddToDock = useCallback(
+    (appId: string) => {
+      addToDock(appId);
+      setShowAddPopover(false);
+    },
+    [addToDock]
   );
 
   const getIconOffset = useCallback(
@@ -166,6 +228,7 @@ export const Dock = memo(function Dock() {
         const offset = getIconOffset(app.id);
         const minimized = isMinimized(app.id);
         const open = isOpen(app.id);
+        const isPinned = pinnedApps.includes(app.id);
 
         return (
           <button
@@ -191,6 +254,30 @@ export const Dock = memo(function Dock() {
             <span className="text-xl select-none" aria-hidden="true">
               {app.icon}
             </span>
+
+            {/* Remove button — visible on hover for pinned apps */}
+            {isPinned && (
+              <span
+                onClick={(e) => handleRemoveFromDock(app.id, e)}
+                className="
+                  absolute -top-1 -right-1 w-4 h-4
+                  flex items-center justify-center
+                  rounded-full text-[10px] font-bold
+                  opacity-0 group-hover:opacity-100
+                  transition-opacity duration-150 cursor-pointer
+                  hover:scale-110
+                "
+                style={{
+                  backgroundColor: 'rgba(239, 68, 68, 0.9)',
+                  color: '#fff',
+                }}
+                role="button"
+                aria-label={`Remove ${app.title} from dock`}
+                tabIndex={-1}
+              >
+                ×
+              </span>
+            )}
 
             {/* Tooltip — only shown on desktop (hover) */}
             <span
@@ -226,6 +313,69 @@ export const Dock = memo(function Dock() {
           </button>
         );
       })}
+
+      {/* Add to dock button */}
+      <div className="relative">
+        <button
+          onClick={() => setShowAddPopover(!showAddPopover)}
+          className="
+            flex items-center justify-center
+            w-11 h-11 rounded-lg
+            transition-all duration-200 ease-out
+            hover:bg-[var(--theme-surface)]
+            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary)]
+            border border-dashed
+          "
+          style={{
+            borderColor: 'var(--theme-primary)',
+            opacity: 0.5,
+          }}
+          title="Add app to dock"
+          aria-label="Add app to dock"
+        >
+          <span className="text-lg select-none" style={{ color: 'var(--theme-primary)' }}>
+            +
+          </span>
+        </button>
+
+        {/* Add popover */}
+        {showAddPopover && (
+          <div
+            ref={popoverRef}
+            className="
+              absolute z-50 p-2 rounded-lg shadow-xl
+              lg:left-full lg:top-0 lg:ml-2
+              max-lg:bottom-full max-lg:left-1/2 max-lg:-translate-x-1/2 max-lg:mb-2
+              max-h-60 overflow-y-auto min-w-[180px]
+            "
+            style={{
+              backgroundColor: 'var(--theme-background)',
+              border: '1px solid var(--theme-surface)',
+            }}
+          >
+            {availableToAdd.length === 0 ? (
+              <p className="text-xs opacity-50 p-2" style={{ color: 'var(--theme-text)' }}>
+                All apps are in dock
+              </p>
+            ) : (
+              availableToAdd.map((app) => (
+                <button
+                  key={app.id}
+                  onClick={() => handleAddToDock(app.id)}
+                  className="
+                    flex items-center gap-2 w-full px-3 py-2 rounded-md text-left
+                    transition-colors hover:bg-[var(--theme-surface)]
+                  "
+                  style={{ color: 'var(--theme-text)' }}
+                >
+                  <span className="text-base">{app.icon}</span>
+                  <span className="text-xs">{app.title}</span>
+                </button>
+              ))
+            )}
+          </div>
+        )}
+      </div>
     </nav>
   );
 });

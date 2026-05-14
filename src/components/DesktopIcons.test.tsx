@@ -2,11 +2,17 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { DesktopIcons } from './DesktopIcons';
 import { useWindowStore } from '../stores/windowStore';
+import { useDesktopStore } from '../stores/desktopStore';
+import { useRecycleBinStore } from '../stores/recycleBinStore';
+import { useDockStore } from '../stores/dockStore';
 
 describe('DesktopIcons', () => {
   beforeEach(() => {
     // Reset window store state before each test
     useWindowStore.setState({ windows: [], activeWindowId: null });
+    useDesktopStore.setState({ hiddenApps: [] });
+    useRecycleBinStore.setState({ items: [] });
+    useDockStore.setState({ pinnedApps: ['browser', 'notes', 'ai-assistant', 'music-player', 'terminal', 'file-explorer', 'app-store', 'settings'] });
   });
 
   it('renders the desktop icons container', () => {

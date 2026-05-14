@@ -22,6 +22,7 @@ const appComponents: Record<string, React.LazyExoticComponent<React.ComponentTyp
   'weather': lazy(() => import('./Weather')),
   'text-editor': lazy(() => import('./TextEditor')),
   'task-manager': lazy(() => import('./TaskManager')),
+  'recycle-bin': lazy(() => import('./RecycleBin')),
 };
 
 /**

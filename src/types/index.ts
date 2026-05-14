@@ -5,7 +5,7 @@ export type Position = { x: number; y: number };
 export type Size = { width: number; height: number };
 
 // App registry
-export type BuiltInAppId = 'notes' | 'ai-assistant' | 'music-player' | 'system-monitor' | 'terminal' | 'secret-room' | 'browser' | 'app-store' | 'settings' | 'file-explorer' | 'calendar' | 'weather' | 'text-editor' | 'task-manager';
+export type BuiltInAppId = 'notes' | 'ai-assistant' | 'music-player' | 'system-monitor' | 'terminal' | 'secret-room' | 'browser' | 'app-store' | 'settings' | 'file-explorer' | 'calendar' | 'weather' | 'text-editor' | 'task-manager' | 'recycle-bin';
 export type AppId = BuiltInAppId | (string & {});
 
 // Window state

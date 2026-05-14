@@ -20,6 +20,7 @@ const APP_ICONS: Record<string, string> = {
   'weather': '🌤️',
   'text-editor': '✏️',
   'task-manager': '📋',
+  'recycle-bin': '🗑️',
 };
 
 interface WindowChromeProps {

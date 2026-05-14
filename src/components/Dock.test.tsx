@@ -10,6 +10,20 @@ vi.mock('../stores/windowStore', () => ({
     selector({ openWindow: mockOpenWindow, windows: mockWindows }),
 }));
 
+vi.mock('../stores/installedAppsStore', () => ({
+  useInstalledAppsStore: (selector: (state: { apps: unknown[] }) => unknown) =>
+    selector({ apps: [] }),
+}));
+
+vi.mock('../stores/dockStore', () => ({
+  useDockStore: (selector: (state: { pinnedApps: string[]; removeFromDock: () => void; addToDock: () => void }) => unknown) =>
+    selector({
+      pinnedApps: ['browser', 'notes', 'ai-assistant', 'music-player', 'terminal', 'file-explorer', 'app-store', 'settings'],
+      removeFromDock: vi.fn(),
+      addToDock: vi.fn(),
+    }),
+}));
+
 describe('Dock', () => {
   beforeEach(() => {
     mockOpenWindow.mockClear();
@@ -21,8 +35,8 @@ describe('Dock', () => {
     expect(screen.getByLabelText('Open Notes')).toBeInTheDocument();
     expect(screen.getByLabelText('Open AI Assistant')).toBeInTheDocument();
     expect(screen.getByLabelText('Open Music Player')).toBeInTheDocument();
-    expect(screen.getByLabelText('Open System Monitor')).toBeInTheDocument();
     expect(screen.getByLabelText('Open Terminal')).toBeInTheDocument();
+    expect(screen.getByLabelText('Open Browser')).toBeInTheDocument();
   });
 
   it('calls openWindow with correct appId when an icon is clicked', () => {
