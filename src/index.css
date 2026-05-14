@@ -1,0 +1,257 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap");
+@import "tailwindcss";
+
+@theme {
+  /* Cyberpunk Color Palette */
+  --color-nebula-black: #0a0a0f;
+  --color-nebula-purple: #8B5CF6;
+  --color-nebula-cyan: #06B6D4;
+  --color-nebula-pink: #EC4899;
+  --color-nebula-surface: rgba(139, 92, 246, 0.15);
+  --color-nebula-text: #e2e8f0;
+
+  /* Matrix Theme */
+  --color-matrix-primary: #22c55e;
+  --color-matrix-secondary: #16a34a;
+  --color-matrix-accent: #4ade80;
+  --color-matrix-bg: #000000;
+  --color-matrix-surface: rgba(34, 197, 94, 0.1);
+
+  /* Aurora Theme */
+  --color-aurora-primary: #6366f1;
+  --color-aurora-secondary: #8b5cf6;
+  --color-aurora-accent: #06b6d4;
+  --color-aurora-bg: #0f172a;
+  --color-aurora-surface: rgba(99, 102, 241, 0.12);
+
+  /* Fonts */
+  --font-primary: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-accent: "Orbitron", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Dynamic theme custom properties (set via JS applyTheme) */
+:root {
+  --theme-primary: #8B5CF6;
+  --theme-secondary: #06B6D4;
+  --theme-accent: #EC4899;
+  --theme-background: #0a0a0f;
+  --theme-surface: rgba(139, 92, 246, 0.15);
+  --theme-text: #e2e8f0;
+}
+
+/* Base styles */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: var(--theme-background);
+  color: var(--theme-text);
+  font-family: var(--font-primary);
+  /* Prevent pull-to-refresh and overscroll bounce on mobile */
+  overscroll-behavior: none;
+}
+
+/* Touch-action rules to prevent unwanted browser gestures */
+/* Prevent pinch-zoom on the entire app shell */
+#root {
+  touch-action: pan-x pan-y;
+}
+
+/* Window drag handles should not trigger browser scroll/gestures */
+.window-drag-handle {
+  touch-action: none;
+}
+
+/* Dock icons: prevent scroll interference during touch interactions */
+[data-testid="dock"] {
+  touch-action: manipulation;
+}
+
+/* Mobile tab bar: allow horizontal panning only */
+[data-testid="mobile-tab-bar"] {
+  touch-action: pan-x;
+}
+
+/* Ensure interactive buttons have proper touch targets (min 44x44px on mobile) */
+@media (max-width: 1023px) {
+  [data-testid="dock"] button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  [data-testid="mobile-tab-bar"] button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Font-display swap fallback (in case Google Fonts is slow) */
+@font-face {
+  font-family: "Space Grotesk";
+  font-display: swap;
+  src: local("Space Grotesk");
+}
+
+@font-face {
+  font-family: "Orbitron";
+  font-display: swap;
+  src: local("Orbitron");
+}
+
+/* Glassmorphism utility */
+@layer utilities {
+  .glass {
+    background: var(--theme-surface, rgba(139, 92, 246, 0.15));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .glass-fallback {
+    background: var(--glass-fallback-bg, rgba(10, 10, 15, 0.85));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+/*
+ * Backdrop-filter fallback using @supports.
+ * Browsers that don't support backdrop-filter (or -webkit-backdrop-filter)
+ * get a more opaque background to maintain readability without blur.
+ */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: var(--glass-fallback-bg, rgba(10, 10, 15, 0.85));
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* Background blob animations — only use transform and opacity */
+@keyframes blob-move-0 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.5;
+  }
+  25% {
+    transform: translate(10vw, -5vh) scale(1.1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate(-5vw, 10vh) scale(0.9);
+    opacity: 0.4;
+  }
+  75% {
+    transform: translate(8vw, 5vh) scale(1.05);
+    opacity: 0.6;
+  }
+}
+
+@keyframes blob-move-1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.4;
+  }
+  25% {
+    transform: translate(-8vw, 8vh) scale(1.15);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(6vw, -6vh) scale(0.85);
+    opacity: 0.5;
+  }
+  75% {
+    transform: translate(-4vw, -8vh) scale(1.1);
+    opacity: 0.7;
+  }
+}
+
+@keyframes blob-move-2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.5;
+  }
+  25% {
+    transform: translate(6vw, 10vh) scale(0.9);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-10vw, -4vh) scale(1.2);
+    opacity: 0.4;
+  }
+  75% {
+    transform: translate(4vw, -6vh) scale(0.95);
+    opacity: 0.55;
+  }
+}
+
+/* ===== Transition & Animation Timing Tokens ===== */
+/* Micro-interactions (hover, focus): 200ms */
+/* State changes (expand, collapse, toggle): 300ms */
+/* Page transitions (route changes, boot): 500ms */
+
+/* Global interactive element transitions */
+@layer base {
+  button,
+  a,
+  [role="button"],
+  input[type="range"],
+  summary {
+    transition-property: color, background-color, border-color, opacity, transform, box-shadow;
+    transition-duration: 200ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+/* Focus-visible styles for keyboard navigation */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--theme-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Remove default focus ring for mouse users */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+}
+
+/* ===== Reduced Motion Support ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Allow essential state indicators to remain visible */
+  .animate-spin,
+  .animate-bounce,
+  .animate-pulse {
+    animation: none !important;
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.4);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.6);
+}

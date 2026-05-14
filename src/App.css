@@ -1,0 +1,60 @@
+/* Boot screen animations */
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glitch {
+  0% {
+    transform: translate(0);
+    opacity: 1;
+  }
+  20% {
+    transform: translate(-2px, 2px);
+    opacity: 0.8;
+  }
+  40% {
+    transform: translate(2px, -2px);
+    opacity: 0.6;
+  }
+  60% {
+    transform: translate(-1px, 1px);
+    opacity: 0.4;
+  }
+  80% {
+    transform: translate(1px, -1px);
+    opacity: 0.2;
+  }
+  100% {
+    transform: translate(0);
+    opacity: 0;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+.animate-glitch {
+  animation: glitch 0.4s ease-out forwards;
+}
+
+/* Reduced motion: simplify boot animations */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in {
+    animation: none;
+    opacity: 1;
+  }
+
+  .animate-glitch {
+    animation: none;
+    opacity: 0;
+  }
+}
