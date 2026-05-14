@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, memo } from 'react';
 import { useWindowStore } from '../stores/windowStore';
+import { useSettingsStore, WALLPAPER_OPTIONS } from '../stores/settingsStore';
 
 interface ContextMenuState {
   visible: boolean;
@@ -21,6 +22,9 @@ const ContextMenu = memo(function ContextMenu({ onAbout }: ContextMenuProps) {
   const [menu, setMenu] = useState<ContextMenuState>({ visible: false, x: 0, y: 0 });
   const [showAbout, setShowAbout] = useState(false);
   const openWindow = useWindowStore((s) => s.openWindow);
+  const wallpaper = useSettingsStore((s) => s.wallpaper);
+  const setWallpaper = useSettingsStore((s) => s.setWallpaper);
+  const setSettingsActiveTab = useSettingsStore((s) => s.setSettingsActiveTab);
 
   const handleContextMenu = useCallback((e: MouseEvent) => {
     // Only show on the desktop area (not inside windows)
@@ -88,7 +92,9 @@ const ContextMenu = memo(function ContextMenu({ onAbout }: ContextMenuProps) {
       icon: '🎨',
       label: 'Change Wallpaper',
       action: () => {
-        openWindow('settings');
+        const currentIndex = WALLPAPER_OPTIONS.findIndex((wp) => wp.id === wallpaper);
+        const nextIndex = (currentIndex + 1) % WALLPAPER_OPTIONS.length;
+        setWallpaper(WALLPAPER_OPTIONS[nextIndex].id);
         handleClose();
       },
     },
@@ -96,6 +102,7 @@ const ContextMenu = memo(function ContextMenu({ onAbout }: ContextMenuProps) {
       icon: '🖥️',
       label: 'Display Settings',
       action: () => {
+        setSettingsActiveTab('display');
         openWindow('settings');
         handleClose();
       },

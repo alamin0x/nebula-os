@@ -1,8 +1,6 @@
-import { useState, memo, useCallback } from 'react';
+import { memo, useCallback } from 'react';
 import { useSettingsStore, WALLPAPER_OPTIONS } from '../stores/settingsStore';
-import type { WallpaperOption } from '../stores/settingsStore';
-
-type SettingsTab = 'account' | 'display' | 'network' | 'power' | 'privacy';
+import type { WallpaperOption, SettingsTab } from '../stores/settingsStore';
 
 const TABS: { id: SettingsTab; label: string; icon: string }[] = [
   { id: 'account', label: 'Account', icon: '👤' },
@@ -16,7 +14,8 @@ const TABS: { id: SettingsTab; label: string; icon: string }[] = [
  * Settings app with sidebar navigation and content panels.
  */
 const Settings = memo(function Settings() {
-  const [activeTab, setActiveTab] = useState<SettingsTab>('account');
+  const activeTab = useSettingsStore((s) => s.settingsActiveTab);
+  const setActiveTab = useSettingsStore((s) => s.setSettingsActiveTab);
 
   return (
     <div className="flex h-full w-full overflow-hidden rounded-b-lg" style={{ backgroundColor: 'var(--theme-background)' }}>

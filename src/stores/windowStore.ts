@@ -67,8 +67,8 @@ export const useWindowStore = create<WindowStore>((set, get) => ({
       appId,
       title,
       position: {
-        x: 100 + (windows.length * 30) % 200,
-        y: 80 + (windows.length * 30) % 150,
+        x: Math.max(0, Math.floor((window.innerWidth - defaultSize.width) / 2)),
+        y: Math.max(0, Math.floor((window.innerHeight - defaultSize.height) / 2)),
       },
       size: { ...defaultSize },
       zIndex,

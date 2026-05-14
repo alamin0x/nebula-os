@@ -37,6 +37,8 @@ export const WALLPAPER_OPTIONS: WallpaperDef[] = [
   },
 ];
 
+export type SettingsTab = 'account' | 'display' | 'network' | 'power' | 'privacy';
+
 export interface SettingsState {
   // Display
   wallpaper: WallpaperOption;
@@ -54,6 +56,9 @@ export interface SettingsState {
   sleepTimer: number; // minutes
   batterySaver: boolean;
 
+  // Active tab for Settings app
+  settingsActiveTab: SettingsTab;
+
   // Actions
   setWallpaper: (wallpaper: WallpaperOption) => void;
   setDarkMode: (enabled: boolean) => void;
@@ -65,6 +70,7 @@ export interface SettingsState {
   setScreenTimeout: (minutes: number) => void;
   setSleepTimer: (minutes: number) => void;
   setBatterySaver: (enabled: boolean) => void;
+  setSettingsActiveTab: (tab: SettingsTab) => void;
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -80,6 +86,7 @@ export const useSettingsStore = create<SettingsState>()(
       screenTimeout: 15,
       sleepTimer: 30,
       batterySaver: false,
+      settingsActiveTab: 'account',
 
       setWallpaper: (wallpaper) => set({ wallpaper }),
       setDarkMode: (darkMode) => set({ darkMode }),
@@ -91,6 +98,7 @@ export const useSettingsStore = create<SettingsState>()(
       setScreenTimeout: (screenTimeout) => set({ screenTimeout }),
       setSleepTimer: (sleepTimer) => set({ sleepTimer }),
       setBatterySaver: (batterySaver) => set({ batterySaver }),
+      setSettingsActiveTab: (settingsActiveTab) => set({ settingsActiveTab }),
     }),
     {
       name: 'nebula-settings',
