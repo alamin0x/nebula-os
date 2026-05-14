@@ -2,6 +2,8 @@
 
 A futuristic browser-based desktop operating system built with React, TypeScript, Vite, and TailwindCSS.
 
+### 🔗 [Live Demo → nebula-os-sigma.vercel.app](https://nebula-os-sigma.vercel.app)
+
 ![Nebula OS](https://img.shields.io/badge/Nebula_OS-v1.0.0-8B5CF6?style=for-the-badge&logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 ![React](https://img.shields.io/badge/React_19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
