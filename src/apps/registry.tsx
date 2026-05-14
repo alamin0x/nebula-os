@@ -17,6 +17,11 @@ const appComponents: Record<string, React.LazyExoticComponent<React.ComponentTyp
   'browser': lazy(() => import('./Browser')),
   'app-store': lazy(() => import('./AppStore')),
   'settings': lazy(() => import('./Settings')),
+  'file-explorer': lazy(() => import('./FileExplorer')),
+  'calendar': lazy(() => import('./Calendar')),
+  'weather': lazy(() => import('./Weather')),
+  'text-editor': lazy(() => import('./TextEditor')),
+  'task-manager': lazy(() => import('./TaskManager')),
 };
 
 /**

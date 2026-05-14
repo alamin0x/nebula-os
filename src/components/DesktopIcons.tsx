@@ -16,6 +16,8 @@ const BUILT_IN_DESKTOP_ICONS: DesktopIcon[] = [
   { id: 'music-player', title: 'Music Player', icon: '🎵' },
   { id: 'system-monitor', title: 'System Monitor', icon: '📊' },
   { id: 'app-store', title: 'App Store', icon: '🏪' },
+  { id: 'file-explorer', title: 'File Explorer', icon: '📂' },
+  { id: 'calendar', title: 'Calendar', icon: '📅' },
 ];
 
 /**

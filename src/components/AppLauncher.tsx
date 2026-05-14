@@ -18,6 +18,11 @@ const BUILT_IN_APPS: LauncherApp[] = [
   { id: 'terminal', title: 'Terminal', icon: '💻' },
   { id: 'app-store', title: 'App Store', icon: '🏪' },
   { id: 'settings', title: 'Settings', icon: '⚙️' },
+  { id: 'file-explorer', title: 'File Explorer', icon: '📂' },
+  { id: 'calendar', title: 'Calendar', icon: '📅' },
+  { id: 'weather', title: 'Weather', icon: '🌤️' },
+  { id: 'text-editor', title: 'Text Editor', icon: '✏️' },
+  { id: 'task-manager', title: 'Task Manager', icon: '📋' },
 ];
 
 interface AppLauncherProps {

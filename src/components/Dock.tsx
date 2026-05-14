@@ -17,6 +17,7 @@ const BUILT_IN_DOCK_APPS: DockApp[] = [
   { id: 'music-player', title: 'Music Player', icon: '🎵' },
   { id: 'system-monitor', title: 'System Monitor', icon: '📊' },
   { id: 'terminal', title: 'Terminal', icon: '💻' },
+  { id: 'file-explorer', title: 'File Explorer', icon: '📂' },
   { id: 'app-store', title: 'App Store', icon: '🏪' },
   { id: 'settings', title: 'Settings', icon: '⚙️' },
 ];

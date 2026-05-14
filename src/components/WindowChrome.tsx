@@ -15,6 +15,11 @@ const APP_ICONS: Record<string, string> = {
   'browser': '🌐',
   'app-store': '🏪',
   'settings': '⚙️',
+  'file-explorer': '📂',
+  'calendar': '📅',
+  'weather': '🌤️',
+  'text-editor': '✏️',
+  'task-manager': '📋',
 };
 
 interface WindowChromeProps {

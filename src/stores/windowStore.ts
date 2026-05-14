@@ -16,6 +16,11 @@ const APP_TITLES: Record<string, string> = {
   'browser': 'Browser',
   'app-store': 'App Store',
   'settings': 'Settings',
+  'file-explorer': 'File Explorer',
+  'calendar': 'Calendar',
+  'weather': 'Weather',
+  'text-editor': 'Text Editor',
+  'task-manager': 'Task Manager',
 };
 
 const APP_DEFAULT_SIZES: Record<string, Size> = {
@@ -28,6 +33,11 @@ const APP_DEFAULT_SIZES: Record<string, Size> = {
   'browser': { width: 900, height: 600 },
   'app-store': { width: 600, height: 500 },
   'settings': { width: 700, height: 500 },
+  'file-explorer': { width: 750, height: 500 },
+  'calendar': { width: 400, height: 450 },
+  'weather': { width: 380, height: 500 },
+  'text-editor': { width: 700, height: 500 },
+  'task-manager': { width: 600, height: 400 },
 };
 
 function getNextZIndex(windows: WindowState[]): number {
