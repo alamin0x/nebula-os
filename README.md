@@ -1,73 +1,131 @@
-# React + TypeScript + Vite
+# 🌌 Nebula OS
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A futuristic browser-based desktop operating system built with React, TypeScript, Vite, and TailwindCSS.
 
-Currently, two official plugins are available:
+![Nebula OS](https://img.shields.io/badge/Nebula_OS-v1.0.0-8B5CF6?style=for-the-badge&logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React_19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS_4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## ✨ Features
 
-## React Compiler
+### 🖥️ Desktop Environment
+- **Boot Sequence** — Animated ASCII art boot screen with progress bar and glitch transition
+- **Window Management** — Draggable, resizable windows with minimize/maximize/close (powered by react-rnd)
+- **Dock** — macOS-style app launcher with magnetic hover effect (icons shift toward cursor)
+- **Desktop Icons** — Double-click to open apps, auto-arranged in columns
+- **Status Bar** — Real-time clock, date, theme indicator, and window count
+- **Mouse Glow** — Subtle radial gradient that follows your cursor
+- **Animated Background** — Particle canvas + floating blobs with theme-reactive colors
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 🎨 Themes
+Switch between 3 cyberpunk-inspired themes via the terminal:
+- **Cyberpunk** (purple/cyan/pink) — default
+- **Matrix** (green/dark) — hacker vibes
+- **Aurora** (indigo/violet/cyan) — calm and elegant
 
-## Expanding the ESLint configuration
+### 📱 Built-in Apps
+| App | Description |
+|-----|-------------|
+| 🌐 **Browser** | Working web browser with URL bar, bookmarks, and navigation |
+| 📝 **Notes** | Note-taking app with categories, localStorage persistence |
+| 🤖 **AI Assistant** | Chat interface with command recognition (opens apps, plays music) |
+| 🎵 **Music Player** | Lo-fi music player with vinyl animation, volume control |
+| 📊 **System Monitor** | Real-time CPU/Memory/Network graphs (simulated) |
+| 💻 **Terminal** | Command-line with filesystem, theme switching, easter eggs |
+| 🏪 **App Store** | Install/uninstall apps, import custom .nebula apps |
+| 🔮 **Secret Room** | Hidden easter egg (type `secret` in terminal) |
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 🏪 App Store
+- Browse and install apps from the built-in catalog
+- **6 pre-built apps**: Calculator, Clock, Snake Game, Paint, Pomodoro Timer, Color Picker
+- **Custom app import**: Paste JSON manifests or upload `.nebula` files
+- Installed apps appear in the Dock and Desktop automatically
+- Apps persist across page refreshes (localStorage)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 🎮 Easter Eggs
+Type these in the Terminal:
+- `matrix` — Matrix rain animation overlay
+- `hack` — Fake hacking sequence with typing effect
+- `secret` — Opens the hidden Secret Room with a mini-game
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### 📱 Responsive Design
+- **Desktop (≥1024px)** — Full window management with drag/resize
+- **Tablet (768-1024px)** — Centered windows, constrained to 80% viewport
+- **Mobile (<768px)** — Full-screen card mode with tab bar for switching
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### ⚡ Performance
+- React.memo, useMemo, useCallback throughout
+- Code splitting via React.lazy (each app is a separate chunk)
+- CSS animations use only transform/opacity (GPU-accelerated)
+- `@media (prefers-reduced-motion)` support
+- Glassmorphism with `@supports` fallback for older browsers
+
+## 🚀 Getting Started
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Run tests (388 tests)
+npm test
+
+# Build for production
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🛠️ Tech Stack
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- **Framework**: React 19 + TypeScript
+- **Build Tool**: Vite 8
+- **Styling**: TailwindCSS 4 + CSS Custom Properties
+- **State Management**: Zustand
+- **Window System**: react-rnd (drag & resize)
+- **Animations**: Framer Motion + CSS Keyframes
+- **Testing**: Vitest + React Testing Library + fast-check (property-based)
+- **Fonts**: Space Grotesk + Orbitron
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 📁 Project Structure
+
 ```
+src/
+├── apps/           # Application components (Notes, Terminal, Browser, etc.)
+├── components/     # UI components (Desktop, Dock, WindowManager, etc.)
+├── stores/         # Zustand state stores
+├── types/          # TypeScript interfaces and types
+├── utils/          # Utility functions (formatTime, circularBuffer, etc.)
+└── integration/    # Integration tests
+```
+
+## 🎯 Custom App Format (.nebula)
+
+Create your own apps with a JSON manifest:
+
+```json
+{
+  "id": "my-custom-app",
+  "name": "My App",
+  "icon": "⚡",
+  "description": "A custom app for Nebula OS",
+  "type": "html",
+  "html": "<html><body><h1>Hello Nebula!</h1></body></html>"
+}
+```
+
+Save as `.nebula` file and upload via the App Store, or paste the JSON directly.
+
+**Supported types:**
+- `"html"` — Inline HTML/CSS/JS rendered in a sandboxed iframe
+- `"web"` — External URL loaded in an iframe
+
+## 📄 License
+
+MIT
+
+---
+
+*Built with ♥ and a lot of caffeine ☕*
