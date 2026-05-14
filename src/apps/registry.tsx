@@ -3,9 +3,6 @@ import type { AppId } from '../types';
 import { useInstalledAppsStore } from '../stores/installedAppsStore';
 import StoreAppRenderer from './StoreAppRenderer';
 
-/** Built-in app IDs that have lazy-loaded components */
-const BUILT_IN_IDS = ['notes', 'ai-assistant', 'music-player', 'system-monitor', 'terminal', 'secret-room', 'browser', 'app-store'];
-
 /**
  * Lazy-loaded app component map.
  * Each app is loaded on-demand via React.lazy() for code splitting.

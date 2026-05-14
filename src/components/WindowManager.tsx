@@ -1,7 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Rnd } from 'react-rnd';
 import { useWindowStore } from '../stores/windowStore';
-import { useInstalledAppsStore } from '../stores/installedAppsStore';
 import { clampPosition } from '../utils/clampPosition';
 import { AppRenderer } from '../apps/registry';
 import WindowChrome from './WindowChrome';

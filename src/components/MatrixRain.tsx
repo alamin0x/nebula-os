@@ -32,7 +32,7 @@ const MatrixRain = memo(function MatrixRain({ onDismiss }: MatrixRainProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>(0);
   const columnsRef = useRef<number[]>([]);
-  const dismissTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const dismissTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const dismiss = useCallback(() => {
     onDismiss();
