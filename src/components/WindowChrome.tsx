@@ -14,6 +14,7 @@ const APP_ICONS: Record<string, string> = {
   'secret-room': '🔮',
   'browser': '🌐',
   'app-store': '🏪',
+  'settings': '⚙️',
 };
 
 interface WindowChromeProps {

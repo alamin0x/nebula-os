@@ -7,7 +7,9 @@ import MouseGlow from './MouseGlow';
 import WindowManager from './WindowManager';
 import MatrixRain from './MatrixRain';
 import HackSequence from './HackSequence';
+import ContextMenu from './ContextMenu';
 import { useTerminalStore } from '../stores/terminalStore';
+import { useSettingsStore, WALLPAPER_OPTIONS } from '../stores/settingsStore';
 
 /**
  * Desktop layout component — the main container rendered after boot.
@@ -20,15 +22,17 @@ import { useTerminalStore } from '../stores/terminalStore';
  * - WindowManager (react-rnd powered windows, z-index 100+)
  * - MatrixRain (overlay triggered by terminal "matrix" command, z-index 1000)
  * - HackSequence (overlay triggered by terminal "hack" command, z-index 1000)
+ * - ContextMenu (right-click menu, z-index 2000)
  *
  * Uses absolute/fixed positioning to layer elements correctly per the z-index stack:
- *   Background (0) → Desktop UI (10) → Windows (100+) → Overlays (1000)
+ *   Background (0) → Desktop UI (10) → Windows (100+) → Overlays (1000) → Context Menu (2000)
  */
 const Desktop = memo(function Desktop() {
   const matrixRainActive = useTerminalStore((state) => state.matrixRainActive);
   const setMatrixRainActive = useTerminalStore((state) => state.setMatrixRainActive);
   const hackActive = useTerminalStore((state) => state.hackActive);
   const setHackActive = useTerminalStore((state) => state.setHackActive);
+  const wallpaper = useSettingsStore((state) => state.wallpaper);
 
   const handleMatrixDismiss = useCallback(() => {
     setMatrixRainActive(false);
@@ -38,14 +42,39 @@ const Desktop = memo(function Desktop() {
     setHackActive(false);
   }, [setHackActive]);
 
+  // Determine wallpaper background style
+  const wallpaperDef = WALLPAPER_OPTIONS.find((w) => w.id === wallpaper);
+  const showAnimatedBg = wallpaper === 'nebula-default';
+  const wallpaperCss = wallpaperDef?.css || '';
+
+  // Cyber Grid needs a special overlay for the grid lines
+  const isCyberGrid = wallpaper === 'cyber-grid';
+
   return (
     <div
       className="h-full w-full relative overflow-hidden"
-      style={{ backgroundColor: 'var(--theme-background)' }}
+      style={{
+        backgroundColor: 'var(--theme-background)',
+        background: !showAnimatedBg ? wallpaperCss : undefined,
+      }}
       data-testid="desktop"
     >
-      {/* Layer 0: Animated background */}
-      <BackgroundRenderer />
+      {/* Layer 0: Animated background (only for nebula-default wallpaper) */}
+      {showAnimatedBg && <BackgroundRenderer />}
+
+      {/* Cyber Grid overlay */}
+      {isCyberGrid && (
+        <div
+          className="fixed inset-0 pointer-events-none"
+          style={{
+            zIndex: 0,
+            backgroundImage:
+              'linear-gradient(rgba(139, 92, 246, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(139, 92, 246, 0.05) 1px, transparent 1px)',
+            backgroundSize: '40px 40px',
+          }}
+          aria-hidden="true"
+        />
+      )}
 
       {/* Layer 1: Mouse glow effect */}
       <MouseGlow />
@@ -65,6 +94,9 @@ const Desktop = memo(function Desktop() {
 
       {/* Layer 1000: Hack sequence overlay */}
       {hackActive && <HackSequence onComplete={handleHackComplete} />}
+
+      {/* Layer 2000: Context menu */}
+      <ContextMenu />
     </div>
   );
 });

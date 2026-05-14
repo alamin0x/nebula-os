@@ -1,15 +1,18 @@
 import type { FileSystemNode } from '../types';
 
 /**
- * Fake filesystem tree with 3 directories and 5 files.
+ * Fake filesystem tree with directories and files.
  * Structure:
  * /home/
+ *   welcome.txt
+ *   notes.txt
  *   /projects/
  *     readme.md
  *     portfolio.json
  *   /documents/
  *     notes.txt
  *     todo.md
+ *   /recordings/
  *   /system/
  *     config.sys
  */
@@ -17,6 +20,16 @@ export const fileSystem: FileSystemNode = {
   name: 'home',
   type: 'directory',
   children: [
+    {
+      name: 'welcome.txt',
+      type: 'file',
+      content: 'Welcome to Nebula OS!\n\nType "help" in the terminal to see available commands.\nExplore the filesystem with ls, cd, cat, and more.',
+    },
+    {
+      name: 'notes.txt',
+      type: 'file',
+      content: 'Personal Notes\n==============\n- Finish terminal implementation\n- Add more wallpapers\n- Explore the secret room',
+    },
     {
       name: 'projects',
       type: 'directory',
@@ -48,6 +61,11 @@ export const fileSystem: FileSystemNode = {
           content: '# TODO\n\n- [x] Build Nebula OS\n- [ ] Take over the world',
         },
       ],
+    },
+    {
+      name: 'recordings',
+      type: 'directory',
+      children: [],
     },
     {
       name: 'system',
@@ -132,4 +150,79 @@ export function resolvePath(currentPath: string[], target: string): string[] | n
   }
 
   return newPath;
+}
+
+/**
+ * Gets the content of a file at the given path.
+ * Returns null if the path is invalid or not a file.
+ */
+export function getFileContent(currentPath: string[], fileName: string): string | null {
+  const dirNode = resolveNode(currentPath);
+  if (!dirNode || dirNode.type !== 'directory' || !dirNode.children) {
+    return null;
+  }
+
+  const file = dirNode.children.find(
+    (c) => c.name.toLowerCase() === fileName.toLowerCase() && c.type === 'file'
+  );
+
+  if (!file) {
+    return null;
+  }
+
+  return file.content ?? '';
+}
+
+/**
+ * Creates a new empty file in the directory at currentPath.
+ * Returns true on success, false if the directory doesn't exist or file already exists.
+ */
+export function createFile(currentPath: string[], name: string): boolean {
+  const dirNode = resolveNode(currentPath);
+  if (!dirNode || dirNode.type !== 'directory' || !dirNode.children) {
+    return false;
+  }
+
+  // Check if file already exists
+  const existing = dirNode.children.find(
+    (c) => c.name.toLowerCase() === name.toLowerCase()
+  );
+  if (existing) {
+    return false;
+  }
+
+  dirNode.children.push({
+    name,
+    type: 'file',
+    content: '',
+  });
+
+  return true;
+}
+
+/**
+ * Creates a new directory in the directory at currentPath.
+ * Returns true on success, false if the parent doesn't exist or directory already exists.
+ */
+export function createDirectory(currentPath: string[], name: string): boolean {
+  const dirNode = resolveNode(currentPath);
+  if (!dirNode || dirNode.type !== 'directory' || !dirNode.children) {
+    return false;
+  }
+
+  // Check if directory already exists
+  const existing = dirNode.children.find(
+    (c) => c.name.toLowerCase() === name.toLowerCase()
+  );
+  if (existing) {
+    return false;
+  }
+
+  dirNode.children.push({
+    name,
+    type: 'directory',
+    children: [],
+  });
+
+  return true;
 }

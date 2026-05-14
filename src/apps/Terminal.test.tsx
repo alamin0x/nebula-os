@@ -14,8 +14,8 @@ describe('Terminal', () => {
 
   it('renders the prompt with default path', () => {
     render(<Terminal />);
-    // The prompt should show "nebula:~ $"
-    const prompts = screen.getAllByText('nebula:~ $');
+    // The prompt should show "guest@nebula:~$"
+    const prompts = screen.getAllByText('guest@nebula:~$');
     expect(prompts.length).toBeGreaterThan(0);
   });
 
@@ -96,7 +96,7 @@ describe('Terminal', () => {
     useTerminalStore.setState({ currentPath: ['projects'] });
 
     render(<Terminal />);
-    const prompts = screen.getAllByText('nebula:~/projects $');
+    const prompts = screen.getAllByText('guest@nebula:~/projects$');
     expect(prompts.length).toBeGreaterThan(0);
   });
 

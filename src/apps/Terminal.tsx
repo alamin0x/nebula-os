@@ -24,10 +24,10 @@ const Terminal = memo(function Terminal() {
     [history]
   );
 
-  // Build the prompt string from currentPath
+  // Build the prompt string from currentPath (guest@nebula:~$ style)
   const prompt = currentPath.length === 0
-    ? 'nebula:~ $'
-    : `nebula:~/${currentPath.join('/')} $`;
+    ? 'guest@nebula:~$'
+    : `guest@nebula:~/${currentPath.join('/')}$`;
 
   // Auto-scroll to bottom when history changes
   useEffect(() => {

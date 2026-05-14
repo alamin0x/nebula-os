@@ -16,6 +16,7 @@ const appComponents: Record<string, React.LazyExoticComponent<React.ComponentTyp
   'secret-room': lazy(() => import('./SecretRoom')),
   'browser': lazy(() => import('./Browser')),
   'app-store': lazy(() => import('./AppStore')),
+  'settings': lazy(() => import('./Settings')),
 };
 
 /**

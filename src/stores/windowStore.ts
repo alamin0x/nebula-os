@@ -15,6 +15,7 @@ const APP_TITLES: Record<string, string> = {
   'secret-room': 'Secret Room',
   'browser': 'Browser',
   'app-store': 'App Store',
+  'settings': 'Settings',
 };
 
 const APP_DEFAULT_SIZES: Record<string, Size> = {
@@ -26,6 +27,7 @@ const APP_DEFAULT_SIZES: Record<string, Size> = {
   'secret-room': { width: 500, height: 400 },
   'browser': { width: 900, height: 600 },
   'app-store': { width: 600, height: 500 },
+  'settings': { width: 700, height: 500 },
 };
 
 function getNextZIndex(windows: WindowState[]): number {

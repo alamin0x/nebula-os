@@ -18,6 +18,7 @@ const BUILT_IN_DOCK_APPS: DockApp[] = [
   { id: 'system-monitor', title: 'System Monitor', icon: '📊' },
   { id: 'terminal', title: 'Terminal', icon: '💻' },
   { id: 'app-store', title: 'App Store', icon: '🏪' },
+  { id: 'settings', title: 'Settings', icon: '⚙️' },
 ];
 
 /**
