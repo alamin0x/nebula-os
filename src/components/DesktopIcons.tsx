@@ -32,12 +32,16 @@ interface ContextMenuState {
   icon: string;
 }
 
+/** MIME type used for drag-and-drop data transfer of Nebula app info */
+const DRAG_MIME = 'application/nebula-app';
+
 /**
  * DesktopIcons component — displays clickable app icons on the desktop surface.
  * Icons are arranged in a vertical grid and open the corresponding window on double-click.
  * Dynamically includes installed store apps.
  * Filters out hidden apps (moved to recycle bin).
  * Includes a fixed Recycle Bin icon at the bottom-right.
+ * Supports HTML5 drag-and-drop: drag icons to dock or recycle bin.
  */
 export const DesktopIcons = memo(function DesktopIcons() {
   const openWindow = useWindowStore((state) => state.openWindow);
@@ -58,6 +62,10 @@ export const DesktopIcons = memo(function DesktopIcons() {
     icon: '',
   });
   const contextMenuRef = useRef<HTMLDivElement>(null);
+
+  // Drag state
+  const [draggingAppId, setDraggingAppId] = useState<string | null>(null);
+  const [recycleBinDragOver, setRecycleBinDragOver] = useState(false);
 
   const allIcons: DesktopIcon[] = [
     ...BUILT_IN_DESKTOP_ICONS,
@@ -109,6 +117,59 @@ export const DesktopIcons = memo(function DesktopIcons() {
     openWindow('recycle-bin' as AppId);
   }, [openWindow]);
 
+  // --- Drag handlers for desktop icons ---
+  const handleDragStart = useCallback(
+    (e: React.DragEvent<HTMLButtonElement>, app: DesktopIcon) => {
+      e.dataTransfer.setData(
+        DRAG_MIME,
+        JSON.stringify({ appId: app.id, title: app.title, icon: app.icon })
+      );
+      e.dataTransfer.effectAllowed = 'move';
+      setDraggingAppId(app.id);
+    },
+    []
+  );
+
+  const handleDragEnd = useCallback(() => {
+    setDraggingAppId(null);
+  }, []);
+
+  // --- Recycle Bin drop target handlers ---
+  const handleRecycleBinDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setRecycleBinDragOver(true);
+  }, []);
+
+  const handleRecycleBinDragEnter = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setRecycleBinDragOver(true);
+  }, []);
+
+  const handleRecycleBinDragLeave = useCallback(() => {
+    setRecycleBinDragOver(false);
+  }, []);
+
+  const handleRecycleBinDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      setRecycleBinDragOver(false);
+      const raw = e.dataTransfer.getData(DRAG_MIME);
+      if (!raw) return;
+      try {
+        const data = JSON.parse(raw) as { appId: string; title: string; icon: string };
+        // Don't allow dropping dock-only drags onto recycle bin
+        if (data.appId) {
+          hideApp(data.appId);
+          moveToTrash(data.appId, data.title, data.icon);
+        }
+      } catch {
+        // ignore malformed data
+      }
+    },
+    [hideApp, moveToTrash]
+  );
+
   // Close context menu on click outside or Escape
   useEffect(() => {
     if (!contextMenu.visible) return;
@@ -144,6 +205,9 @@ export const DesktopIcons = memo(function DesktopIcons() {
         {visibleIcons.map((app) => (
           <button
             key={app.id}
+            draggable="true"
+            onDragStart={(e) => handleDragStart(e, app)}
+            onDragEnd={handleDragEnd}
             onDoubleClick={() => handleDoubleClick(app.id)}
             onContextMenu={(e) => handleContextMenu(e, app)}
             className="
@@ -154,6 +218,9 @@ export const DesktopIcons = memo(function DesktopIcons() {
               focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]
               cursor-pointer select-none
             "
+            style={{
+              opacity: draggingAppId === app.id ? 0.5 : 1,
+            }}
             data-testid={`desktop-icon-${app.id}`}
             aria-label={`Open ${app.title}`}
             title={`Double-click to open ${app.title}`}
@@ -171,10 +238,14 @@ export const DesktopIcons = memo(function DesktopIcons() {
         ))}
       </div>
 
-      {/* Recycle Bin — fixed at bottom-right */}
+      {/* Recycle Bin — fixed at bottom-right, also a drop target */}
       <button
         onClick={handleOpenRecycleBin}
         onDoubleClick={handleOpenRecycleBin}
+        onDragOver={handleRecycleBinDragOver}
+        onDragEnter={handleRecycleBinDragEnter}
+        onDragLeave={handleRecycleBinDragLeave}
+        onDrop={handleRecycleBinDrop}
         className="
           fixed bottom-20 right-6 z-10
           flex flex-col items-center justify-center gap-1
@@ -185,6 +256,12 @@ export const DesktopIcons = memo(function DesktopIcons() {
           cursor-pointer select-none
           lg:bottom-6
         "
+        style={{
+          transform: recycleBinDragOver ? 'scale(1.2)' : 'scale(1)',
+          boxShadow: recycleBinDragOver
+            ? '0 0 20px rgba(239, 68, 68, 0.6), 0 0 40px rgba(239, 68, 68, 0.3)'
+            : 'none',
+        }}
         data-testid="desktop-icon-recycle-bin"
         aria-label="Open Recycle Bin"
         title="Recycle Bin"
