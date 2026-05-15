@@ -9,6 +9,7 @@ interface DesktopStore {
   hideApp: (appId: string) => void;
   showApp: (appId: string) => void;
   setPosition: (appId: string, col: number, row: number) => void;
+  resetPositions: () => void;
   loadFromStorage: () => void;
 }
 
@@ -36,6 +37,11 @@ export const useDesktopStore = create<DesktopStore>((set, get) => ({
     const newPositions = { ...positions, [appId]: { col, row } };
     set({ positions: newPositions });
     savePositionsToStorage(newPositions);
+  },
+
+  resetPositions: () => {
+    set({ positions: {} });
+    savePositionsToStorage({});
   },
 
   loadFromStorage: () => {

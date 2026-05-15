@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, memo } from 'react';
 import { useWindowStore } from '../stores/windowStore';
 import { useSettingsStore, WALLPAPER_OPTIONS } from '../stores/settingsStore';
+import { useDesktopStore } from '../stores/desktopStore';
 
 interface ContextMenuState {
   visible: boolean;
@@ -69,7 +70,7 @@ const ContextMenu = memo(function ContextMenu({ onAbout }: ContextMenuProps) {
       icon: '🔄',
       label: 'Refresh Desktop',
       action: () => {
-        // Visual refresh — no-op
+        useDesktopStore.getState().resetPositions();
         handleClose();
       },
     },
