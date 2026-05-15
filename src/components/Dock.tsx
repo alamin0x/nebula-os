@@ -48,8 +48,8 @@ export const Dock = memo(function Dock() {
   const windows = useWindowStore((state) => state.windows);
   const installedApps = useInstalledAppsStore((state) => state.apps);
   const pinnedApps = useDockStore((state) => state.pinnedApps);
-  const removeFromDock = useDockStore((state) => state.removeFromDock);
   const addToDock = useDockStore((state) => state.addToDock);
+  const removeFromDock = useDockStore((state) => state.removeFromDock);
   const reorderDock = useDockStore((state) => state.reorderDock);
   const [cursorPos, setCursorPos] = useState<Position>({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
@@ -140,14 +140,6 @@ export const Dock = memo(function Dock() {
       openWindow(appId);
     },
     [openWindow]
-  );
-
-  const handleRemoveFromDock = useCallback(
-    (appId: string, e: React.MouseEvent) => {
-      e.stopPropagation();
-      removeFromDock(appId);
-    },
-    [removeFromDock]
   );
 
   // --- Dock icon drag handlers (for reorder + drag-out-to-remove) ---
@@ -364,7 +356,6 @@ export const Dock = memo(function Dock() {
         const offset = getIconOffset(app.id);
         const minimized = isMinimized(app.id);
         const open = isOpen(app.id);
-        const isPinned = pinnedApps.includes(app.id);
         const showInsertBefore = isDragOver && dragOverIndex === index;
 
         return (
@@ -403,47 +394,6 @@ export const Dock = memo(function Dock() {
             >
               <span className="text-xl select-none" aria-hidden="true">
                 {app.icon}
-              </span>
-
-              {/* Remove button — visible on hover for pinned apps */}
-              {isPinned && (
-                <span
-                  onClick={(e) => handleRemoveFromDock(app.id, e)}
-                  className="
-                    absolute -top-1 -right-1 w-4 h-4
-                    flex items-center justify-center
-                    rounded-full text-[10px] font-bold
-                    opacity-0 group-hover:opacity-100
-                    transition-opacity duration-150 cursor-pointer
-                    hover:scale-110
-                  "
-                  style={{
-                    backgroundColor: 'rgba(239, 68, 68, 0.9)',
-                    color: '#fff',
-                  }}
-                  role="button"
-                  aria-label={`Remove ${app.title} from dock`}
-                  tabIndex={-1}
-                >
-                  ×
-                </span>
-              )}
-
-              {/* Tooltip — only shown on desktop (hover) */}
-              <span
-                className="
-                  absolute left-full ml-2 px-2 py-1 rounded text-xs whitespace-nowrap
-                  opacity-0 group-hover:opacity-100 pointer-events-none
-                  transition-opacity duration-200
-                  lg:block hidden
-                "
-                style={{
-                  backgroundColor: 'var(--theme-background)',
-                  color: 'var(--theme-text)',
-                  border: '1px solid var(--theme-surface)',
-                }}
-              >
-                {app.title}
               </span>
 
               {/* Minimized / open indicator dot */}

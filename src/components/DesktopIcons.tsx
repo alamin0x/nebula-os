@@ -21,6 +21,11 @@ const BUILT_IN_DESKTOP_ICONS: DesktopIcon[] = [
   { id: 'app-store', title: 'App Store', icon: '🏪' },
   { id: 'file-explorer', title: 'File Explorer', icon: '📂' },
   { id: 'calendar', title: 'Calendar', icon: '📅' },
+  { id: 'weather', title: 'Weather', icon: '🌤️' },
+  { id: 'text-editor', title: 'Text Editor', icon: '✏️' },
+  { id: 'task-manager', title: 'Task Manager', icon: '📋' },
+  { id: 'ai-assistant', title: 'AI Assistant', icon: '🤖' },
+  { id: 'settings', title: 'Settings', icon: '⚙️' },
 ];
 
 /** Grid cell size in pixels */
