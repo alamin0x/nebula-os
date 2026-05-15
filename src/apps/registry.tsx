@@ -1,7 +1,41 @@
-import { lazy, Suspense, memo } from 'react';
+import { lazy, Suspense, memo, Component } from 'react';
 import type { AppId } from '../types';
 import { useInstalledAppsStore } from '../stores/installedAppsStore';
 import StoreAppRenderer from './StoreAppRenderer';
+
+/**
+ * Error boundary that catches lazy-load failures and shows an error message.
+ */
+class AppErrorBoundary extends Component<
+  { children: React.ReactNode; appId: string },
+  { hasError: boolean; error: string }
+> {
+  constructor(props: { children: React.ReactNode; appId: string }) {
+    super(props);
+    this.state = { hasError: false, error: '' };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error: error.message };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex items-center justify-center h-full w-full flex-col gap-2 p-4">
+          <span className="text-2xl">⚠️</span>
+          <p className="text-sm font-medium" style={{ color: 'var(--theme-text)' }}>
+            Failed to load app
+          </p>
+          <p className="text-xs opacity-50 text-center" style={{ color: 'var(--theme-text)' }}>
+            {this.state.error}
+          </p>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 /**
  * Lazy-loaded app component map.
@@ -60,9 +94,11 @@ const AppRenderer = memo(function AppRenderer({ appId }: AppRendererProps) {
   // Built-in app — use lazy-loaded component
   if (LazyComponent) {
     return (
-      <Suspense fallback={<LoadingFallback />}>
-        <LazyComponent />
-      </Suspense>
+      <AppErrorBoundary appId={appId}>
+        <Suspense fallback={<LoadingFallback />}>
+          <LazyComponent />
+        </Suspense>
+      </AppErrorBoundary>
     );
   }
 
