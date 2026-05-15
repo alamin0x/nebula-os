@@ -1,10 +1,35 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import BootScreen from './components/BootScreen'
 import LockScreen from './components/LockScreen'
 import BootErrorBoundary from './components/BootErrorBoundary'
 import Desktop from './components/Desktop'
 import AudioPersistence from './components/AudioPersistence'
 import './App.css'
+
+/** Schema version — increment when localStorage structure changes */
+const SCHEMA_VERSION = '1.0.0';
+const SCHEMA_KEY = 'nebula-schema-version';
+
+/** Check and clear stale localStorage if schema version changed */
+function checkSchemaVersion(): void {
+  try {
+    const stored = localStorage.getItem(SCHEMA_KEY);
+    if (stored !== SCHEMA_VERSION) {
+      // Clear all nebula-related localStorage keys
+      const keysToRemove: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('nebula-') && key !== SCHEMA_KEY) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach((key) => localStorage.removeItem(key));
+      localStorage.setItem(SCHEMA_KEY, SCHEMA_VERSION);
+    }
+  } catch {
+    // localStorage unavailable, skip
+  }
+}
 
 type AppPhase = 'boot' | 'lock' | 'desktop'
 
@@ -19,6 +44,11 @@ function getInitialPhase(): AppPhase {
 
 function App() {
   const [phase, setPhase] = useState<AppPhase>(getInitialPhase)
+
+  // Check schema version on mount
+  useEffect(() => {
+    checkSchemaVersion();
+  }, []);
 
   const handleBootComplete = useCallback(() => {
     setPhase('lock')

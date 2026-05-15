@@ -61,7 +61,7 @@ export default memo(function LockScreen({ onUnlock }: LockScreenProps) {
     >
       {/* Time */}
       <p
-        className="text-7xl font-light tracking-wide mb-2 select-none"
+        className="text-5xl md:text-7xl font-light tracking-wide mb-2 select-none"
         style={{ color: 'var(--theme-text, #e0e0e0)' }}
       >
         {formattedTime}
@@ -69,7 +69,7 @@ export default memo(function LockScreen({ onUnlock }: LockScreenProps) {
 
       {/* Date */}
       <p
-        className="text-lg opacity-70 mb-12 select-none"
+        className="text-base md:text-lg opacity-70 mb-8 md:mb-12 select-none"
         style={{ color: 'var(--theme-text, #e0e0e0)' }}
       >
         {formattedDate}
@@ -84,7 +84,7 @@ export default memo(function LockScreen({ onUnlock }: LockScreenProps) {
             : { x: 0 }
         }
         transition={{ duration: 0.4 }}
-        className="flex flex-col items-center gap-4 px-10 py-8 rounded-2xl border"
+        className="flex flex-col items-center gap-4 px-6 py-6 md:px-10 md:py-8 rounded-2xl border w-full max-w-xs md:max-w-sm mx-4"
         style={{
           backgroundColor: 'rgba(15, 15, 25, 0.6)',
           backdropFilter: 'blur(16px)',

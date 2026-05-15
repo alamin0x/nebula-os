@@ -28,9 +28,18 @@ const BUILT_IN_DESKTOP_ICONS: DesktopIcon[] = [
   { id: 'settings', title: 'Settings', icon: '⚙️' },
 ];
 
-/** Grid cell size in pixels */
+/** Grid cell size in pixels — responsive */
 const GRID_CELL_WIDTH = 90;
 const GRID_CELL_HEIGHT = 90;
+const GRID_CELL_WIDTH_MOBILE = 75;
+const GRID_CELL_HEIGHT_MOBILE = 75;
+
+/** Mobile breakpoint */
+const MOBILE_BREAKPOINT = 768;
+
+function getIsMobile(): boolean {
+  return (globalThis.innerWidth || 1024) < MOBILE_BREAKPOINT;
+}
 
 interface ContextMenuState {
   visible: boolean;
@@ -65,6 +74,7 @@ export const DesktopIcons = memo(function DesktopIcons() {
   const pinnedApps = useDockStore((state) => state.pinnedApps);
   const addToDock = useDockStore((state) => state.addToDock);
 
+  const [isMobile, setIsMobile] = useState(getIsMobile);
   const [contextMenu, setContextMenu] = useState<ContextMenuState>({
     visible: false,
     x: 0,
@@ -79,6 +89,16 @@ export const DesktopIcons = memo(function DesktopIcons() {
   // Drag state
   const [draggingAppId, setDraggingAppId] = useState<string | null>(null);
   const [recycleBinDragOver, setRecycleBinDragOver] = useState(false);
+
+  // Track mobile state on resize
+  useEffect(() => {
+    const handleResize = () => setIsMobile(getIsMobile());
+    globalThis.addEventListener('resize', handleResize);
+    return () => globalThis.removeEventListener('resize', handleResize);
+  }, []);
+
+  const cellWidth = isMobile ? GRID_CELL_WIDTH_MOBILE : GRID_CELL_WIDTH;
+  const cellHeight = isMobile ? GRID_CELL_HEIGHT_MOBILE : GRID_CELL_HEIGHT;
 
   const allIcons: DesktopIcon[] = useMemo(() => [
     ...BUILT_IN_DESKTOP_ICONS,
@@ -107,9 +127,8 @@ export const DesktopIcons = memo(function DesktopIcons() {
     }
 
     // Calculate max rows based on container height (estimate)
-    // Use a reasonable default; we'll compute from the container if available
     const containerHeight = containerRef.current?.clientHeight || (window.innerHeight - 120);
-    const maxRows = Math.max(1, Math.floor(containerHeight / GRID_CELL_HEIGHT));
+    const maxRows = Math.max(1, Math.floor(containerHeight / cellHeight));
 
     // Second pass: assign positions to icons without saved positions (column-first order)
     let col = 0;
@@ -140,13 +159,23 @@ export const DesktopIcons = memo(function DesktopIcons() {
     }
 
     return result;
-  }, [visibleIcons, positions]);
+  }, [visibleIcons, positions, cellHeight]);
 
   const handleDoubleClick = useCallback(
     (appId: AppId) => {
       openWindow(appId);
     },
     [openWindow]
+  );
+
+  // Single tap to open on mobile
+  const handleSingleTap = useCallback(
+    (appId: AppId) => {
+      if (isMobile) {
+        openWindow(appId);
+      }
+    },
+    [openWindow, isMobile]
   );
 
   const handleContextMenu = useCallback(
@@ -221,8 +250,8 @@ export const DesktopIcons = memo(function DesktopIcons() {
       // We'll reposition only if dropEffect is 'none' (meaning no drop target accepted it)
       if (e.dataTransfer.dropEffect !== 'none') return;
 
-      const col = Math.max(0, Math.floor(x / GRID_CELL_WIDTH));
-      const row = Math.max(0, Math.floor(y / GRID_CELL_HEIGHT));
+      const col = Math.max(0, Math.floor(x / cellWidth));
+      const row = Math.max(0, Math.floor(y / cellHeight));
 
       // Check if cell is occupied by another icon
       const occupiedBy = Object.entries(iconPositions).find(
@@ -334,7 +363,7 @@ export const DesktopIcons = memo(function DesktopIcons() {
     <>
       <div
         ref={containerRef}
-        className="absolute top-14 left-20 right-0 bottom-14 z-10 p-4 lg:left-20 max-lg:left-4"
+        className="absolute top-12 left-4 bottom-14 z-10 p-2 md:top-14 md:p-4 lg:left-20"
         style={{ position: 'absolute' }}
         data-testid="desktop-icons"
       >
@@ -345,10 +374,11 @@ export const DesktopIcons = memo(function DesktopIcons() {
           return (
             <button
               key={app.id}
-              draggable="true"
+              draggable={!isMobile}
               onDragStart={(e) => handleDragStart(e, app)}
               onDragEnd={handleDragEnd}
               onDoubleClick={() => handleDoubleClick(app.id)}
+              onClick={() => handleSingleTap(app.id)}
               onContextMenu={(e) => handleContextMenu(e, app)}
               onDragOver={isRecycleBin ? handleRecycleBinDragOver : undefined}
               onDragEnter={isRecycleBin ? handleRecycleBinDragEnter : undefined}
@@ -356,15 +386,15 @@ export const DesktopIcons = memo(function DesktopIcons() {
               onDrop={isRecycleBin ? handleRecycleBinDrop : undefined}
               className="
                 absolute flex flex-col items-center justify-center gap-1
-                w-20 h-20 rounded-lg
+                w-16 h-16 md:w-20 md:h-20 rounded-lg
                 transition-all duration-200 ease-out
                 hover:bg-[var(--theme-surface)]
                 focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]
                 cursor-pointer select-none
               "
               style={{
-                left: `${pos.col * GRID_CELL_WIDTH}px`,
-                top: `${pos.row * GRID_CELL_HEIGHT}px`,
+                left: `${pos.col * cellWidth}px`,
+                top: `${pos.row * cellHeight}px`,
                 opacity: draggingAppId === app.id ? 0.5 : 1,
                 transform: isRecycleBin && recycleBinDragOver ? 'scale(1.2)' : 'scale(1)',
                 boxShadow: isRecycleBin && recycleBinDragOver
@@ -373,9 +403,9 @@ export const DesktopIcons = memo(function DesktopIcons() {
               }}
               data-testid={`desktop-icon-${app.id}`}
               aria-label={`Open ${app.title}`}
-              title={`Double-click to open ${app.title}`}
+              title={isMobile ? `Tap to open ${app.title}` : `Double-click to open ${app.title}`}
             >
-              <span className="text-3xl relative" aria-hidden="true">
+              <span className="text-2xl md:text-3xl relative" aria-hidden="true">
                 {app.icon}
                 {isRecycleBin && recycleBinItems.length > 0 && (
                   <span
@@ -406,8 +436,8 @@ export const DesktopIcons = memo(function DesktopIcons() {
           ref={contextMenuRef}
           className="fixed z-[2000] py-1 rounded-lg shadow-xl min-w-[160px]"
           style={{
-            left: contextMenu.x,
-            top: contextMenu.y,
+            left: Math.min(contextMenu.x, window.innerWidth - 180),
+            top: Math.min(contextMenu.y, window.innerHeight - 120),
             backgroundColor: 'var(--theme-background)',
             border: '1px solid var(--theme-surface)',
           }}

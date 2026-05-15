@@ -18,17 +18,17 @@ const Settings = memo(function Settings() {
   const setActiveTab = useSettingsStore((s) => s.setSettingsActiveTab);
 
   return (
-    <div className="flex h-full w-full overflow-hidden rounded-b-lg" style={{ backgroundColor: 'var(--theme-background)' }}>
+    <div className="flex flex-col md:flex-row h-full w-full overflow-hidden rounded-b-lg" style={{ backgroundColor: 'var(--theme-background)' }}>
       {/* Sidebar */}
       <nav
-        className="w-48 shrink-0 border-r flex flex-col py-2"
+        className="w-full md:w-48 shrink-0 border-b md:border-b-0 md:border-r flex flex-row md:flex-col py-1 md:py-2 overflow-x-auto md:overflow-x-visible"
         style={{ borderColor: 'var(--theme-surface)', backgroundColor: 'rgba(0,0,0,0.3)' }}
       >
         {TABS.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className="flex items-center gap-2 px-4 py-2.5 text-sm text-left transition-colors duration-150"
+            className="flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm text-left transition-colors duration-150 whitespace-nowrap shrink-0"
             style={{
               color: activeTab === tab.id ? 'var(--theme-primary)' : 'var(--theme-text)',
               backgroundColor: activeTab === tab.id ? 'var(--theme-surface)' : 'transparent',

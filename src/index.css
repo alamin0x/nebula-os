@@ -52,6 +52,7 @@ body,
   font-family: var(--font-primary);
   /* Prevent pull-to-refresh and overscroll bounce on mobile */
   overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Touch-action rules to prevent unwanted browser gestures */
@@ -254,4 +255,20 @@ body,
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(139, 92, 246, 0.6);
+}
+
+/* Loading spinner pulse animation */
+@keyframes loading-pulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+.loading-pulse {
+  animation: loading-pulse 1.5s ease-in-out infinite;
 }

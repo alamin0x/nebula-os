@@ -133,6 +133,16 @@ export default memo(function BootScreen({ onComplete }: BootScreenProps) {
               {message}
             </motion.p>
           ))}
+          {/* Blinking cursor indicator */}
+          {!isGlitching && (
+            <motion.span
+              className="inline-block w-2 h-4 mt-2"
+              style={{ backgroundColor: 'var(--theme-primary, #8B5CF6)' }}
+              animate={{ opacity: [1, 0, 1] }}
+              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              aria-hidden="true"
+            />
+          )}
         </div>
       </motion.div>
     </AnimatePresence>

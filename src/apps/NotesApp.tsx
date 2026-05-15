@@ -1,4 +1,4 @@
-import { useEffect, useCallback, memo, useMemo } from 'react';
+import { useState, useEffect, useCallback, memo, useMemo } from 'react';
 import { useNotesStore } from '../stores/notesStore';
 import { extractTitle } from '../utils/extractTitle';
 
@@ -16,6 +16,8 @@ const NotesApp = memo(function NotesApp() {
   const deleteNote = useNotesStore((state) => state.deleteNote);
   const setActiveNote = useNotesStore((state) => state.setActiveNote);
   const loadFromStorage = useNotesStore((state) => state.loadFromStorage);
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Load notes from localStorage on mount
   useEffect(() => {
@@ -51,6 +53,7 @@ const NotesApp = memo(function NotesApp() {
   const handleSelectNote = useCallback(
     (id: string) => {
       setActiveNote(id);
+      setSidebarOpen(false); // Close sidebar on mobile after selecting
     },
     [setActiveNote]
   );
@@ -66,11 +69,36 @@ const NotesApp = memo(function NotesApp() {
   }, [notes]);
 
   return (
-    <div className="flex h-full w-full" style={{ color: 'var(--theme-text)' }}>
+    <div className="flex h-full w-full relative" style={{ color: 'var(--theme-text)' }}>
+      {/* Mobile sidebar toggle button */}
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="absolute top-2 left-2 z-10 w-8 h-8 flex items-center justify-center rounded-lg md:hidden"
+        style={{ backgroundColor: 'var(--theme-surface)' }}
+        aria-label="Toggle notes sidebar"
+      >
+        <span className="text-sm">☰</span>
+      </button>
+
+      {/* Mobile sidebar backdrop */}
+      {sidebarOpen && (
+        <div
+          className="absolute inset-0 z-10 bg-black/40 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* Sidebar */}
       <div
-        className="w-56 shrink-0 flex flex-col border-r border-white/10 overflow-hidden"
-        style={{ background: 'rgba(0, 0, 0, 0.2)' }}
+        className={`
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+          md:translate-x-0
+          absolute md:relative z-20 md:z-auto
+          w-56 shrink-0 flex flex-col border-r border-white/10 overflow-hidden
+          transition-transform duration-200 h-full
+        `}
+        style={{ background: 'rgba(0, 0, 0, 0.95)' }}
       >
         {/* Sidebar header */}
         <div className="flex items-center justify-between px-3 py-2 border-b border-white/10">

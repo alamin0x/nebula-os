@@ -340,8 +340,9 @@ export const Dock = memo(function Dock() {
         glass fixed z-10 flex
         lg:left-0 lg:top-1/2 lg:-translate-y-1/2 lg:flex-col lg:py-3 lg:px-2 lg:rounded-r-xl lg:gap-2
         max-lg:bottom-0 max-lg:left-0 max-lg:right-0 max-lg:top-auto
-        max-lg:translate-y-0 max-lg:flex-row max-lg:justify-center
-        max-lg:py-2 max-lg:px-4 max-lg:rounded-t-xl max-lg:gap-2
+        max-lg:translate-y-0 max-lg:flex-row max-lg:justify-start
+        max-lg:py-2 max-lg:px-3 max-lg:rounded-t-xl max-lg:gap-1.5
+        max-lg:overflow-x-auto max-lg:overflow-y-hidden
         transition-shadow duration-200
       "
       style={{
@@ -378,7 +379,7 @@ export const Dock = memo(function Dock() {
               data-dock-index={index}
               className="
                 relative flex items-center justify-center
-                w-11 h-11 rounded-lg
+                w-9 h-9 lg:w-11 lg:h-11 rounded-lg
                 transition-all duration-200 ease-out
                 hover:bg-[var(--theme-surface)]
                 active:bg-[var(--theme-surface)]
@@ -392,16 +393,16 @@ export const Dock = memo(function Dock() {
               title={app.title}
               aria-label={`Open ${app.title}`}
             >
-              <span className="text-xl select-none" aria-hidden="true">
+              <span className="text-lg lg:text-xl select-none" aria-hidden="true">
                 {app.icon}
               </span>
 
               {/* Minimized / open indicator dot */}
               {open && (
                 <span
-                  className="absolute bottom-0.5 left-1/2 -translate-x-1/2 h-1 rounded-full transition-all duration-200"
+                  className="absolute bottom-0.5 left-1/2 -translate-x-1/2 h-1.5 rounded-full transition-all duration-200"
                   style={{
-                    width: minimized ? '4px' : '8px',
+                    width: minimized ? '5px' : '10px',
                     backgroundColor: minimized
                       ? 'var(--theme-secondary)'
                       : 'var(--theme-primary)',

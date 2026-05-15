@@ -148,7 +148,7 @@ const AppStore = memo(function AppStore() {
       {/* Tab content */}
       <div className="flex-1 overflow-y-auto p-4">
         {activeTab === 'catalog' && (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {appCatalog.map((app) => (
               <AppCard
                 key={app.id}
@@ -168,7 +168,7 @@ const AppStore = memo(function AppStore() {
                 No apps installed yet. Browse the catalog to get started.
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {apps.map((app) => (
                   <AppCard
                     key={app.id}

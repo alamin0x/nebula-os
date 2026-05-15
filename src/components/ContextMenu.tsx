@@ -136,8 +136,8 @@ const ContextMenu = memo(function ContextMenu({ onAbout }: ContextMenuProps) {
         <div
           className="fixed z-[2000] min-w-[200px] rounded-lg py-1.5 shadow-xl border"
           style={{
-            left: menu.x,
-            top: menu.y,
+            left: Math.min(menu.x, window.innerWidth - 220),
+            top: Math.min(menu.y, window.innerHeight - 300),
             backgroundColor: 'rgba(15, 15, 25, 0.85)',
             backdropFilter: 'blur(12px)',
             borderColor: 'rgba(255, 255, 255, 0.1)',

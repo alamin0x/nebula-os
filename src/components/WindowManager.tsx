@@ -66,10 +66,10 @@ function getResponsiveWindowBounds(
   mode: ViewportMode,
 ) {
   if (mode === 'mobile') {
-    // Full-screen card mode
+    // Full-screen card mode — leave space for dock at bottom
     return {
       position: { x: 0, y: 0 },
-      size: { width: viewportWidth, height: viewportHeight },
+      size: { width: viewportWidth, height: viewportHeight - 52 },
     };
   }
 
@@ -295,7 +295,7 @@ const WindowManager = memo(function WindowManager() {
       {/* Mobile: bottom tab bar for switching between open windows */}
       {mode === 'mobile' && visibleWindows.length > 1 && (
         <nav
-          className="fixed bottom-0 left-0 right-0 z-[200] flex items-center justify-around glass border-t border-white/10 py-2 px-1"
+          className="fixed bottom-12 left-0 right-0 z-[200] flex items-center justify-around glass border-t border-white/10 py-2 px-1"
           style={{ touchAction: 'manipulation' }}
           data-testid="mobile-tab-bar"
           aria-label="Open applications"

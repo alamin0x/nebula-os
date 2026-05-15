@@ -78,7 +78,7 @@ const AppLauncher = memo(function AppLauncher({ isOpen, onClose }: AppLauncherPr
 
   return (
     <div
-      className="fixed inset-0 z-[1500] flex flex-col items-center pt-20"
+      className="fixed inset-0 z-[1500] flex flex-col items-center pt-14 md:pt-20"
       style={{
         backgroundColor: 'rgba(0, 0, 0, 0.75)',
         backdropFilter: 'blur(8px)',
@@ -87,12 +87,12 @@ const AppLauncher = memo(function AppLauncher({ isOpen, onClose }: AppLauncherPr
       data-testid="app-launcher"
     >
       <div
-        className="w-full max-w-2xl px-6"
+        className="w-full max-w-2xl px-3 md:px-6"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Search bar */}
         <div
-          className="rounded-xl px-4 py-3 mb-8 border"
+          className="rounded-xl px-3 md:px-4 py-2.5 md:py-3 mb-6 md:mb-8 border"
           style={{
             backgroundColor: 'rgba(20, 20, 35, 0.8)',
             backdropFilter: 'blur(12px)',
@@ -105,7 +105,7 @@ const AppLauncher = memo(function AppLauncher({ isOpen, onClose }: AppLauncherPr
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search applications..."
-            className="w-full bg-transparent outline-none text-base"
+            className="w-full bg-transparent outline-none text-sm md:text-base"
             style={{
               color: 'var(--theme-text)',
               caretColor: 'var(--theme-primary)',
@@ -116,16 +116,16 @@ const AppLauncher = memo(function AppLauncher({ isOpen, onClose }: AppLauncherPr
         </div>
 
         {/* App grid */}
-        <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-4">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 md:gap-4">
           {filteredApps.map((app) => (
             <button
               key={app.id}
               onClick={() => handleAppClick(app.id)}
-              className="flex flex-col items-center gap-2 p-3 rounded-xl transition-all duration-200 hover:bg-white/10"
+              className="flex flex-col items-center gap-1.5 md:gap-2 p-2 md:p-3 rounded-xl transition-all duration-200 hover:bg-white/10"
             >
-              <span className="text-4xl" aria-hidden="true">{app.icon}</span>
+              <span className="text-3xl md:text-4xl" aria-hidden="true">{app.icon}</span>
               <span
-                className="text-xs text-center leading-tight max-w-[80px] truncate"
+                className="text-[10px] md:text-xs text-center leading-tight max-w-[70px] md:max-w-[80px] truncate"
                 style={{ color: 'var(--theme-text)' }}
               >
                 {app.title}
