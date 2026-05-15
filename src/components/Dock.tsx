@@ -53,10 +53,8 @@ export const Dock = memo(function Dock() {
   const reorderDock = useDockStore((state) => state.reorderDock);
   const [cursorPos, setCursorPos] = useState<Position>({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
-  const [showAddPopover, setShowAddPopover] = useState(false);
   const dockRef = useRef<HTMLDivElement>(null);
   const iconRefs = useRef<Map<AppId, HTMLButtonElement>>(new Map());
-  const popoverRef = useRef<HTMLDivElement>(null);
 
   // Drag-and-drop state
   const [isDragOver, setIsDragOver] = useState(false);
@@ -86,11 +84,6 @@ export const Dock = memo(function Dock() {
     .map((a) => ({ id: a.id as AppId, title: a.name, icon: a.icon }));
 
   const DOCK_APPS: DockApp[] = [...pinnedDockApps, ...installedNotPinned];
-
-  // Apps available to add (not currently in dock)
-  const availableToAdd: DockApp[] = Object.entries(ALL_BUILT_IN_APPS)
-    .filter(([id]) => !pinnedApps.includes(id))
-    .map(([id, meta]) => ({ id: id as AppId, title: meta.title, icon: meta.icon }));
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     setCursorPos({ x: e.clientX, y: e.clientY });
@@ -125,18 +118,6 @@ export const Dock = memo(function Dock() {
     };
   }, [isHovering, handleMouseMove]);
 
-  // Close popover when clicking outside
-  useEffect(() => {
-    if (!showAddPopover) return;
-    const handleClickOutside = (e: MouseEvent) => {
-      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
-        setShowAddPopover(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showAddPopover]);
-
   const handleDockMouseEnter = useCallback(() => {
     setIsHovering(true);
   }, []);
@@ -167,14 +148,6 @@ export const Dock = memo(function Dock() {
       removeFromDock(appId);
     },
     [removeFromDock]
-  );
-
-  const handleAddToDock = useCallback(
-    (appId: string) => {
-      addToDock(appId);
-      setShowAddPopover(false);
-    },
-    [addToDock]
   );
 
   // --- Dock icon drag handlers (for reorder + drag-out-to-remove) ---
@@ -500,69 +473,6 @@ export const Dock = memo(function Dock() {
           aria-hidden="true"
         />
       )}
-
-      {/* Add to dock button */}
-      <div className="relative">
-        <button
-          onClick={() => setShowAddPopover(!showAddPopover)}
-          className="
-            flex items-center justify-center
-            w-11 h-11 rounded-lg
-            transition-all duration-200 ease-out
-            hover:bg-[var(--theme-surface)]
-            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary)]
-            border border-dashed
-          "
-          style={{
-            borderColor: 'var(--theme-primary)',
-            opacity: 0.5,
-          }}
-          title="Add app to dock"
-          aria-label="Add app to dock"
-        >
-          <span className="text-lg select-none" style={{ color: 'var(--theme-primary)' }}>
-            +
-          </span>
-        </button>
-
-        {/* Add popover */}
-        {showAddPopover && (
-          <div
-            ref={popoverRef}
-            className="
-              absolute z-50 p-2 rounded-lg shadow-xl
-              lg:left-full lg:top-0 lg:ml-2
-              max-lg:bottom-full max-lg:left-1/2 max-lg:-translate-x-1/2 max-lg:mb-2
-              max-h-60 overflow-y-auto min-w-[180px]
-            "
-            style={{
-              backgroundColor: 'var(--theme-background)',
-              border: '1px solid var(--theme-surface)',
-            }}
-          >
-            {availableToAdd.length === 0 ? (
-              <p className="text-xs opacity-50 p-2" style={{ color: 'var(--theme-text)' }}>
-                All apps are in dock
-              </p>
-            ) : (
-              availableToAdd.map((app) => (
-                <button
-                  key={app.id}
-                  onClick={() => handleAddToDock(app.id)}
-                  className="
-                    flex items-center gap-2 w-full px-3 py-2 rounded-md text-left
-                    transition-colors hover:bg-[var(--theme-surface)]
-                  "
-                  style={{ color: 'var(--theme-text)' }}
-                >
-                  <span className="text-base">{app.icon}</span>
-                  <span className="text-xs">{app.title}</span>
-                </button>
-              ))
-            )}
-          </div>
-        )}
-      </div>
     </nav>
   );
 });
